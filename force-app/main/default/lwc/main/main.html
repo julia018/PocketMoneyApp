@@ -1,0 +1,21 @@
+<template>
+    <lightning-card>
+        <lightning-record-view-form record-id={userId} object-api-name='User'>
+            <div class='slds-box'>
+                <lightning-output-field field-name="Name">
+                </lightning-output-field>
+                <lightning-output-field field-name="balance__c">
+                </lightning-output-field>
+            </div>
+        </lightning-record-view-form>
+    </lightning-card>
+    
+    
+    <template if:true={error}> 
+        {error.message}
+    </template>
+    <h1>delimiter</h1>
+    <lightning-card title='Parent call child'>
+        <c-transaction-list></c-transaction-list>
+    </lightning-card>
+</template>
