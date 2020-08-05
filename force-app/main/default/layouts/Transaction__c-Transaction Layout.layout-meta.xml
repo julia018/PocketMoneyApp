@@ -11,12 +11,16 @@
                 <field>Name</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Required</behavior>
-                <field>type__c</field>
+                <behavior>Edit</behavior>
+                <field>amount__c</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Required</behavior>
-                <field>amount__c</field>
+                <behavior>Edit</behavior>
+                <field>debit__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>created__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
