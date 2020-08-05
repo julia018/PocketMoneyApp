@@ -7,7 +7,8 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 const COLUMNS = [
     { label: 'debit', fieldName: 'debit__c', type: 'boolean', editable: true },
-    { label: 'amount', fieldName: 'amount__c', type: 'number', typeAttributes: { maximumFractionDigits: 2 }, editable: true }
+    { label: 'amount', fieldName: 'amount__c', type: 'number', typeAttributes: { maximumFractionDigits: 2 }, editable: true },
+    { label: 'creation', fieldName: 'created__c', type: 'text' }
 ];
 
 export default class RelatedContactsByForAccount extends LightningElement {
@@ -18,7 +19,7 @@ export default class RelatedContactsByForAccount extends LightningElement {
     selectedRecords = [];
 
     @wire(getTransactions, {userId: Id})
-    contacts;
+    transactions;
 
     handleSave(event) {
 
@@ -34,13 +35,9 @@ export default class RelatedContactsByForAccount extends LightningElement {
                 recordInputs[i].apiName = 'Transaction__c';
                 recordInputs[i].fields.OwnerId = Id;
                 promises.add(createRecord(recordInputs[i]))
-
-                //change for apex create call
             }
             else{              
                 promises.add(updateRecord(recordInputs[i]));
-
-                //change for apex update call
             }
         }
 
@@ -48,12 +45,12 @@ export default class RelatedContactsByForAccount extends LightningElement {
             this.dispatchEvent(
                 new ShowToastEvent({
                     title: 'Success',
-                    message: 'Contacts updated',
+                    message: 'Transactions updated',
                     variant: 'success'
                 })
             );
             this.draftValues = [];
-            return refreshApex(this.contacts);
+            return refreshApex(this.transactions);
         }).catch(error => {
             this.dispatchEvent(
                 new ShowToastEvent({
@@ -82,12 +79,12 @@ export default class RelatedContactsByForAccount extends LightningElement {
         }
     }
 
-    addContact(){
-        let newContact = {Id:"", debit__c:"", amount__c:""};
-        this.contacts.data = [...this.contacts.data, newContact];
+    addTransaction(){
+        let newTrans = {Id:"", debit__c:"", amount__c:""};
+        this.transactions.data = [...this.transactions.data, newTrans];
     }
 
-    deleteContacts(){
+    deleteTransactions(){
         if(this.selectedRecords){
             let promises = new Set();
             for(let i = 0; i < this.selectedRecords.length; i++){
@@ -99,13 +96,13 @@ export default class RelatedContactsByForAccount extends LightningElement {
                 this.dispatchEvent(
                     new ShowToastEvent({
                         title: 'Success',
-                        message: 'Contact deleted',
+                        message: 'Transactions deleted. Refresh the page for new balance value!',
                         variant: 'success'
                     })
                 );                
                 this.selectedRecords = [];
                 this.isDeleteButtonDisabled = true;
-                return refreshApex(this.contacts);
+                return refreshApex(this.transactions);
             }).catch(error => {
                 this.dispatchEvent(
                     new ShowToastEvent({
