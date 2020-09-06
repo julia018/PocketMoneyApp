@@ -33,7 +33,79 @@ private class TransactionControllerTest {
 
     }
 
+    /* User hasn't got access to Transaction object. */
+    @isTest  static void getTransactionsProfileObjectLevelAccessNegativeTest() {
+        String uniqueUserName = 'testName' + DateTime.now().getTime() + '@testorg.com';
+        Profile prof = [SELECT Id FROM Profile WHERE Name = 'Custom: Sales Profile'];
+        User u = new User(Alias = 'test', Email = 'standarduser@testorg.com', EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US', LocaleSidKey='en_US', ProfileId = prof.Id,
+        TimeZoneSidKey = 'America/Los_Angeles', UserName = uniqueUserName);
+        Test.startTest();
+        System.runAs(u) {
+            Boolean check = false;
+            
+            try {
+                List<Transaction__c> resultList = TransactionController.getTransactions(u.Id);
+            } catch (System.QueryException e) {                
+                check = true;
+            }
+            System.assertEquals(true, check);
+        }
+        Test.stopTest();
+
+    }
+
+    /* User has got access to Transaction object but hasn't to field custom field 'created'. */
+    @isTest  static void getTransactionsProfileFieldLevelAccessNegativeTest() {
+        String uniqueUserName = 'testName' + DateTime.now().getTime() + '@testorg.com';
+        Profile prof = [SELECT Id FROM Profile WHERE Name = 'Custom: Marketing Profile'];
+        User u = new User(Alias = 'test', Email = 'standarduser@testorg.com', EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US', LocaleSidKey='en_US', ProfileId = prof.Id,
+        TimeZoneSidKey = 'America/Los_Angeles', UserName = uniqueUserName);
+        Test.startTest();
+        System.runAs(u) {
+            Boolean check = false;
+            
+            try {
+                List<Transaction__c> resultList = TransactionController.getTransactions(u.Id);
+            } catch (System.QueryException e) {                
+                check = true;
+            }
+            System.assertEquals(true, check);
+        }
+        Test.stopTest();
+    } 
+
+    /* User has got access to Transaction object and all object's fields. */
+    @isTest  static void getTransactionsProfileObjectLevelAndFieldLevelAccessPositiveTest() {
+        String uniqueUserName = 'testName' + DateTime.now().getTime() + '@testorg.com';
+        Profile prof = [SELECT Id FROM Profile WHERE Name = 'Custom: Support Profile'];
+        User u = new User(Alias = 'testy', Email = 'standarduser@testorg.com', EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US', LocaleSidKey='en_US', ProfileId = prof.Id,
+        TimeZoneSidKey = 'America/Los_Angeles', UserName = uniqueUserName);
+        Test.startTest();
+        System.runAs(u) {
+            Boolean check = false;            
+            try {
+                List<Transaction__c> resultList = TransactionController.getTransactions(u.Id);
+            } catch (System.QueryException e) {                
+                check = true;
+            }
+            System.assertEquals(false, check);
+        }
+        Test.stopTest();
+
+    }
+
+    @isTest static void getTransactionsPermissionSetNegativeTest() {
+        String uniqueUserName = 'testName' + DateTime.now().getTime() + '@testorg.com';
+        Profile prof = [SELECT Id FROM Profile WHERE Name = 'Custom: Support Profile'];
+        User u = new User(Alias = 'testy', Email = 'standarduser@testorg.com', EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US', LocaleSidKey='en_US', ProfileId = prof.Id,
+        TimeZoneSidKey = 'America/Los_Angeles', UserName = uniqueUserName);
+        PermissionSet ps = [SELECT Id FROM PermissionSet WHERE Name = 'TransactionReadPS'];
+        insert new PermissionSetAssignment(AssigneeId = u.id, PermissionSetId = ps.Id);
+    }
+
     private static void insertTwoTestUser() {
+
+        Profile prof = [SELECT Id FROM Profile WHERE Name = 'System Administrator'];
 
         // first
         User u = new user();
@@ -44,7 +116,7 @@ private class TransactionControllerTest {
         u.CommunityNickname = 'test123';
         u.LocaleSidKey = 'en_US';
         u.TimeZoneSidKey = 'GMT';
-        u.ProfileID = '00e9D000000VUTGQA4';
+        u.ProfileID = prof.Id;
         u.LanguageLocaleKey = 'en_US';
         u.EmailEncodingKey = 'UTF-8';
         insert u;
@@ -58,7 +130,7 @@ private class TransactionControllerTest {
         y.CommunityNickname = 'test124';
         y.LocaleSidKey = 'en_US';
         y.TimeZoneSidKey = 'GMT';
-        y.ProfileID = '00e9D000000VUTGQA4';
+        y.ProfileID = prof.Id;
         y.LanguageLocaleKey = 'en_US';
         y.EmailEncodingKey = 'UTF-8';
         insert y;

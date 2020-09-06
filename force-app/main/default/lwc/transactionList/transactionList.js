@@ -19,7 +19,17 @@ export default class RelatedContactsByForAccount extends LightningElement {
     selectedRecords = [];
 
     @wire(getTransactions, {userId: Id})
-    transactions;
+    transactions ({error, data}) {
+        if (error) {
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Permission denied.',
+                    message: error.body.message,
+                    variant: 'error'
+                })
+            );
+        }
+    }
 
     handleSave(event) {
 

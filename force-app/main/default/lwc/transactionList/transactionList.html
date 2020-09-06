@@ -1,6 +1,6 @@
 <template>
     <lightning-card title="Related Transactions" icon-name="utility:money">
-        <div class="slds-m-around_medium">
+        <div class="slds-var-m-around_medium">
             <template if:true={transactions.data}> 
                 <div class="slds-col">
                     <span><p>Selected Records: <b style="color:red;">{recordsCount}</b></p></span>
@@ -29,7 +29,7 @@
             </template>
             <template if:true={transactions.error}> 
                 <!-- if some error is appeared do something -->
-                error
+                {transactions.error.body.message}
             </template>
         </div>
     </lightning-card>

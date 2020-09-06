@@ -1,8 +1,13 @@
-public with sharing class UserController {
+public class UserController {
     @AuraEnabled(cacheable=true)
     public static User getUserById(String userId){
-        User u = [SELECT Name, Address, MobilePhone, Email FROM User WHERE Id =:userId];
-        return u;
+        try {
+            User u = [SELECT Name, Address, MobilePhone, Email, balance__c FROM User WHERE Id =:userId WITH SECURITY_ENFORCED];
+            return u;
+        } catch (System.QueryException e) {
+            return null;
+        }
+        
     }
 }
 
