@@ -94,14 +94,6 @@ private class TransactionControllerTest {
 
     }
 
-    @isTest static void getTransactionsPermissionSetNegativeTest() {
-        String uniqueUserName = 'testName' + DateTime.now().getTime() + '@testorg.com';
-        Profile prof = [SELECT Id FROM Profile WHERE Name = 'Custom: Support Profile'];
-        User u = new User(Alias = 'testy', Email = 'standarduser@testorg.com', EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US', LocaleSidKey='en_US', ProfileId = prof.Id,
-        TimeZoneSidKey = 'America/Los_Angeles', UserName = uniqueUserName);
-        PermissionSet ps = [SELECT Id FROM PermissionSet WHERE Name = 'TransactionReadPS'];
-        insert new PermissionSetAssignment(AssigneeId = u.id, PermissionSetId = ps.Id);
-    }
 
     private static void insertTwoTestUser() {
 
