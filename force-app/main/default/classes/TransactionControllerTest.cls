@@ -94,6 +94,32 @@ private class TransactionControllerTest {
 
     }
 
+    @isTest  static void getTransactionsPermissionSetTest() {
+
+        PermissionSet ps = [SELECT Id,Name FROM PermissionSet where Name='TransactionReadPS'];
+
+        String uniqueUserName = 'testName' + DateTime.now().getTime() + '@testorg.com';
+        // Custom: Sales Profile hasn't got access to Transaction object and fields (getTransactionsProfileObjectLevelAccessNegativeTest())
+        Profile prof = [SELECT Id FROM Profile WHERE Name = 'Custom: Sales Profile'];
+        User u = new User(Alias = 'testy', Email = 'standarduser@testorg.com', EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US', LocaleSidKey='en_US', ProfileId = prof.Id,
+        TimeZoneSidKey = 'America/Los_Angeles', UserName = uniqueUserName);
+        insert u;
+        PermissionSetAssignment psa = new PermissionSetAssignment(AssigneeId = u.Id, PermissionSetId = ps.Id);
+        insert psa;
+        Test.startTest();
+        System.runAs(u) {
+            Boolean check = false;            
+            try {
+                List<Transaction__c> resultList = TransactionController.getTransactions(u.Id);
+            } catch (System.QueryException e) {                
+                check = true;
+            }
+            System.assertEquals(false, check);
+        }
+        Test.stopTest();
+
+    }
+
 
     private static void insertTwoTestUser() {
 
